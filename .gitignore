@@ -37,7 +37,6 @@ logs/
 
 # Development files
 data/
-rankings_data.json
 *.py
 scraper.js
 test/
