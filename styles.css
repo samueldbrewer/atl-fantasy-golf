@@ -1,0 +1,1082 @@
+/* Masters-Inspired Golf App Design */
+/* Clean, minimal, elegant design with Augusta Green (Pantone 342C) */
+
+:root {
+    /* Masters Green Palette */
+    --masters-green: #006747;  /* Pantone 342C - Augusta Green */
+    --masters-dark-green: #004d36;
+    --masters-light-green: #e8f5e9;
+    --masters-accent-green: #00875a;
+    
+    /* Supporting Colors */
+    --masters-gold: #d4af37;
+    --masters-white: #ffffff;
+    --masters-off-white: #fafafa;
+    --masters-gray-light: #f5f5f5;
+    --masters-gray-medium: #e0e0e0;
+    --masters-gray-dark: #757575;
+    --masters-text: #1a1a1a;
+    
+    /* Shadows and Effects */
+    --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    background: var(--masters-off-white);
+    min-height: 100vh;
+    color: var(--masters-text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: var(--masters-white);
+    min-height: 100vh;
+    box-shadow: 0 0 40px rgba(0, 103, 71, 0.05);
+}
+
+/* Header - Elegant Masters Style */
+header {
+    background: linear-gradient(135deg, var(--masters-green) 0%, var(--masters-dark-green) 100%);
+    color: var(--masters-white);
+    padding: 30px 40px;
+    box-shadow: 0 2px 20px rgba(0, 103, 71, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: padding;
+}
+
+header.condensed {
+    padding: 10px 20px;
+    box-shadow: 0 2px 10px rgba(0, 103, 71, 0.2);
+}
+
+header.condensed .tab-navigation {
+    border-top: none;
+    padding-top: 0;
+    margin-bottom: 0;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    position: relative;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                margin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    max-height: 100px;
+    overflow: hidden;
+}
+
+header.condensed .header-content {
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0;
+    pointer-events: none;
+}
+
+.app-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    background: white;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    left: 0;
+}
+
+.app-title {
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0;
+    text-align: center;
+    color: var(--masters-white);
+    flex: 1;
+}
+
+.app-title strong {
+    font-weight: 600;
+}
+
+.header-refresh-btn {
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: none;
+    color: var(--masters-white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.header-refresh-btn svg {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.header-refresh-btn:hover svg {
+    opacity: 0.8;
+    transform: rotate(90deg);
+}
+
+.header-refresh-btn.spinning svg {
+    animation: spin 1s linear infinite;
+}
+
+.header-refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0;
+    text-align: center;
+    color: var(--masters-white);
+}
+
+/* Tab Navigation - Minimal & Clean */
+.tab-navigation {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 20px;
+    transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                border 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.tab-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--masters-gold);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-btn:hover {
+    color: var(--masters-white);
+}
+
+.tab-btn.active {
+    color: var(--masters-white);
+}
+
+.tab-btn.active::after {
+    width: 100%;
+}
+
+/* Main Content Area */
+main {
+    padding: 40px;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeInUp {
+    from { 
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Search Bar - Elegant Minimal */
+.search-container {
+    margin-bottom: 30px;
+}
+
+.search-wrapper {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 14px 50px 14px 20px;
+    border: 1px solid var(--masters-gray-medium);
+    border-radius: 30px;
+    font-size: 15px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--masters-white);
+}
+
+.search-bar:focus {
+    outline: none;
+    border-color: var(--masters-green);
+    box-shadow: 0 0 0 3px rgba(0, 103, 71, 0.1);
+}
+
+.search-clear {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--masters-gray-light);
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    color: var(--masters-gray-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-clear:hover {
+    background: var(--masters-green);
+    color: var(--masters-white);
+}
+
+/* Rankings Container - Clean Grid */
+.rankings-container {
+    display: grid;
+    gap: 30px;
+}
+
+/* Tournament Sections - Similar to Rankings */
+.tournament-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+@media (min-width: 768px) {
+    .rankings-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Ranking Cards - Minimal Elegance */
+.ranking-type, .tournament-section {
+    background: var(--masters-white);
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid var(--masters-gray-medium);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ranking-type:hover, .tournament-section:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+.ranking-type h3, .tournament-section h3 {
+    color: var(--masters-green);
+    margin: -25px -25px 20px -25px;
+    padding: 25px;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    transition: all 0.3s ease;
+    border-radius: 12px 12px 0 0;
+}
+
+.ranking-type h3:hover, .tournament-section h3:hover {
+    background: var(--masters-light-green);
+    color: var(--masters-dark-green);
+}
+
+.ranking-type h3 .expand-icon, .tournament-section h3 .expand-icon {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+.ranking-type.collapsed .rankings-list,
+.tournament-section.collapsed .section-content {
+    display: none;
+}
+
+.ranking-type.collapsed h3,
+.tournament-section.collapsed h3 {
+    margin-bottom: -25px;
+    border-radius: 12px;
+}
+
+.ranking-type:not(.collapsed) h3 .expand-icon,
+.tournament-section:not(.collapsed) h3 .expand-icon {
+    transform: rotate(180deg);
+}
+
+.rankings-list {
+    max-height: 600px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--masters-green) var(--masters-gray-light);
+}
+
+.rankings-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.rankings-list::-webkit-scrollbar-track {
+    background: var(--masters-gray-light);
+    border-radius: 3px;
+}
+
+.rankings-list::-webkit-scrollbar-thumb {
+    background: var(--masters-green);
+    border-radius: 3px;
+}
+
+/* Player Cards - Clean Design */
+.player-card {
+    background: var(--masters-white);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--masters-gray-light);
+}
+
+.player-card:hover {
+    background: var(--masters-light-green);
+    border-color: var(--masters-green);
+    transform: translateX(4px);
+}
+
+.player-rank {
+    font-weight: 600;
+    color: var(--masters-green);
+    min-width: 35px;
+    font-size: 14px;
+}
+
+.player-name {
+    flex-grow: 1;
+    margin: 0 15px;
+    font-weight: 400;
+    color: var(--masters-text);
+}
+
+.player-score {
+    color: var(--masters-gray-dark);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Content Header - Simplified Style */
+.content-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: var(--masters-gray-light);
+    border-radius: 8px;
+}
+
+.content-header h3 {
+    color: var(--masters-green);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin: 0;
+    flex: 1;
+}
+
+.content-header span {
+    color: var(--masters-gray-dark);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Leaderboard - Tournament Style */
+.leaderboard-container {
+    background: var(--masters-white);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--masters-gray-medium);
+}
+
+.leaderboard-row {
+    background: var(--masters-white);
+    padding: 16px 20px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: 50px 1fr auto auto;
+    gap: 20px;
+    align-items: center;
+    transition: all 0.2s ease;
+    border: 1px solid var(--masters-gray-light);
+}
+
+.leaderboard-row:hover {
+    background: var(--masters-light-green);
+    border-color: var(--masters-green);
+    transform: translateX(2px);
+}
+
+.position {
+    font-weight: 600;
+    color: var(--masters-green);
+    text-align: center;
+    font-size: 15px;
+}
+
+.golfer-name {
+    font-weight: 400;
+    color: var(--masters-text);
+    font-size: 15px;
+}
+
+.score {
+    font-weight: 600;
+    color: var(--masters-text);
+    font-size: 15px;
+}
+
+.thru {
+    color: var(--masters-gray-dark);
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+/* Loading State */
+.loading {
+    text-align: center;
+    padding: 60px;
+    color: var(--masters-gray-dark);
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* Modal - Clean Overlay */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background-color: var(--masters-white);
+    margin: 5% auto;
+    padding: 40px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close {
+    position: absolute;
+    right: 25px;
+    top: 25px;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--masters-gray-dark);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close:hover {
+    color: var(--masters-green);
+    background: var(--masters-light-green);
+}
+
+#modalPlayerName {
+    color: var(--masters-green);
+    margin-bottom: 15px;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+#modalPlayerDetails {
+    color: var(--masters-text);
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--masters-gray-medium);
+    line-height: 1.8;
+}
+
+#modalPlayerDetails h4 {
+    color: var(--masters-green);
+    margin: 15px 0 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+#recentResults {
+    margin-top: 20px;
+}
+
+.result-item {
+    background: var(--masters-gray-light);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    transition: all 0.2s ease;
+}
+
+.result-item:hover {
+    background: var(--masters-light-green);
+}
+
+.tournament-name {
+    font-weight: 500;
+    color: var(--masters-text);
+    font-size: 14px;
+}
+
+.tournament-date {
+    color: var(--masters-gray-dark);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.result-position {
+    font-weight: 600;
+    color: var(--masters-green);
+    font-size: 14px;
+}
+
+/* Refresh Button - Elegant Style */
+.refresh-btn {
+    background: var(--masters-green);
+    color: var(--masters-white);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.refresh-btn:hover {
+    background: var(--masters-dark-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 103, 71, 0.2);
+}
+
+.refresh-btn:active {
+    transform: translateY(0);
+}
+
+.refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Team Leaderboard - Premium Style */
+.team-leaderboard {
+    padding: 0;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 35px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--masters-gray-medium);
+}
+
+.leaderboard-header h2 {
+    color: var(--masters-green);
+    margin-bottom: 8px;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+
+.tournament-info {
+    color: var(--masters-gray-dark);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.team-row {
+    background: var(--masters-white);
+    border-radius: 10px;
+    box-shadow: var(--shadow-card);
+    border-left: 3px solid;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    overflow: hidden;
+    border: 1px solid var(--masters-gray-light);
+}
+
+.team-row:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+.team-row.championship {
+    border-left-color: var(--masters-green);
+}
+
+.team-row.relegation {
+    border-left-color: var(--masters-gold);
+}
+
+.team-row.expanded {
+    box-shadow: var(--shadow-hover);
+}
+
+.team-summary {
+    display: grid;
+    grid-template-columns: 60px 1fr 30px;
+    align-items: center;
+    padding: 18px 20px;
+    gap: 15px;
+}
+
+.team-rank {
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--masters-green);
+    text-align: center;
+}
+
+.team-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.team-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--masters-text);
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.team-leader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.leader-position {
+    font-weight: 600;
+    color: var(--masters-green);
+    background: var(--masters-light-green);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.leader-name {
+    color: var(--masters-gray-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.expand-icon {
+    color: var(--masters-gray-dark);
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.team-row.expanded .expand-icon {
+    transform: rotate(180deg);
+}
+
+.team-details {
+    padding: 20px;
+    background: var(--masters-gray-light);
+    border-top: 1px solid var(--masters-gray-medium);
+}
+
+.players-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.active-players h4, .bench-players h4 {
+    color: var(--masters-green);
+    margin-bottom: 12px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--masters-green);
+}
+
+.player-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.player-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--masters-white);
+    border-radius: 6px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    border: 1px solid var(--masters-gray-light);
+    cursor: pointer;
+}
+
+.player-row:hover {
+    background: var(--masters-light-green);
+    border-color: var(--masters-green);
+    transform: translateX(2px);
+}
+
+.player-row.missed-cut {
+    opacity: 0.6;
+    background: var(--masters-gray-light);
+}
+
+.player-row.bench {
+    background: var(--masters-gray-light);
+    opacity: 0.8;
+}
+
+.player-name {
+    flex-grow: 1;
+    font-weight: 400;
+    color: var(--masters-text);
+}
+
+.player-position {
+    font-weight: 600;
+    color: var(--masters-green);
+    min-width: 45px;
+    text-align: center;
+}
+
+.player-score {
+    font-weight: 500;
+    min-width: 45px;
+    text-align: center;
+    color: var(--masters-text);
+}
+
+.player-thru {
+    color: var(--masters-gray-dark);
+    font-size: 12px;
+    min-width: 35px;
+    text-transform: uppercase;
+}
+
+.leaderboard-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid var(--masters-gray-medium);
+}
+
+.last-updated {
+    color: var(--masters-gray-dark);
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .app-container {
+        box-shadow: none;
+    }
+    
+    header {
+        padding: 20px 15px;
+    }
+    
+    header.condensed {
+        padding: 8px 10px;
+    }
+    
+    .header-content {
+        display: grid;
+        grid-template-columns: 45px 1fr 45px;
+        align-items: center;
+        gap: 0;
+    }
+    
+    .app-logo {
+        width: 40px;
+        height: 40px;
+        padding: 5px;
+        position: static;
+        justify-self: start;
+    }
+    
+    .app-title {
+        font-size: 20px;
+        letter-spacing: 0.5px;
+        justify-self: center;
+        text-align: center;
+    }
+    
+    .logo-spacer {
+        width: 45px;
+        visibility: hidden;
+        justify-self: end;
+    }
+    
+    h1 {
+        font-size: 24px;
+        letter-spacing: 1px;
+    }
+    
+    .tab-navigation {
+        gap: 10px;
+        max-width: 100%;
+    }
+    
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    main {
+        padding: 25px 15px;
+    }
+    
+    .rankings-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .leaderboard-row {
+        grid-template-columns: 40px 1fr auto;
+        font-size: 14px;
+    }
+    
+    .thru {
+        display: none;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 30px 20px;
+    }
+    
+    .players-section {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .team-rank {
+        font-size: 20px;
+        min-width: 40px;
+    }
+    
+    .player-row {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+    
+    /* Team Components Mobile Styles */
+    .team-summary {
+        grid-template-columns: 50px 1fr 25px;
+        padding: 15px;
+        gap: 12px;
+    }
+    
+    .team-rank {
+        font-size: 18px;
+    }
+    
+    .team-name {
+        font-size: 14px;
+    }
+    
+    .team-leader {
+        font-size: 12px;
+        gap: 6px;
+    }
+    
+    .leader-position {
+        font-size: 11px;
+        padding: 1px 6px;
+    }
+    
+    .team-details {
+        padding: 15px;
+    }
+    
+    .players-section {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .active-players h4, .bench-players h4 {
+        font-size: 11px;
+        margin-bottom: 10px;
+    }
+    
+    .player-position {
+        font-size: 11px;
+        min-width: 35px;
+    }
+    
+    .player-score {
+        font-size: 11px;
+        min-width: 35px;
+    }
+    
+    .player-thru {
+        display: none;
+    }
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus Styles for Accessibility */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--masters-green);
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .tab-navigation,
+    .search-container,
+    .refresh-btn,
+    .modal {
+        display: none;
+    }
+    
+    body {
+        background: white;
+    }
+    
+    .app-container {
+        box-shadow: none;
+    }
+}

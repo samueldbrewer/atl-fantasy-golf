@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATL Fantasy Golf</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-content">
+                <img src="logo.png" alt="Fantasy Golf Logo" class="app-logo">
+                <h1 class="app-title"><strong>ATL Fantasy Golf</strong></h1>
+                <button class="header-refresh-btn" onclick="refreshAllData()" title="Refresh All Data">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 4v6h-6M1 20v-6h6"/>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                    </svg>
+                </button>
+            </div>
+            <nav class="tab-navigation">
+                <button class="tab-btn active" data-tab="leaderboard">Tournament</button>
+                <button class="tab-btn" data-tab="rankings">Rankings</button>
+            </nav>
+        </header>
+
+        <main>
+            <div id="rankings" class="tab-content">
+                <div class="search-container">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" placeholder="Search golfers..." class="search-bar">
+                        <button class="search-clear" onclick="clearSearch('searchInput')" style="display: none;">×</button>
+                    </div>
+                </div>
+                
+                <div class="rankings-container">
+                    <div class="ranking-type collapsed" data-ranking="world">
+                        <h3 onclick="toggleRankingTable('world')">
+                            World Golf Rankings
+                            <span class="expand-icon">▼</span>
+                        </h3>
+                        <div id="worldRankings" class="rankings-list">
+                            <div class="loading">Loading rankings...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="ranking-type collapsed" data-ranking="datagolf">
+                        <h3 onclick="toggleRankingTable('datagolf')">
+                            Data Golf Rankings
+                            <span class="expand-icon">▼</span>
+                        </h3>
+                        <div id="dataGolfRankings" class="rankings-list">
+                            <div class="loading">Loading rankings...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="ranking-type collapsed" data-ranking="fedex">
+                        <h3 onclick="toggleRankingTable('fedex')">
+                            FedEx Cup Rankings
+                            <span class="expand-icon">▼</span>
+                        </h3>
+                        <div id="fedexRankings" class="rankings-list">
+                            <div class="loading">Loading rankings...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="leaderboard" class="tab-content active">
+                <div class="search-container">
+                    <div class="search-wrapper">
+                        <input type="text" id="tournamentSearchInput" placeholder="Search players..." class="search-bar">
+                        <button class="search-clear" onclick="clearSearch('tournamentSearchInput')" style="display: none;">×</button>
+                    </div>
+                </div>
+                
+                <div class="tournament-sections">
+                    <!-- League Section -->
+                    <div class="tournament-section collapsed" data-section="league">
+                        <h3 onclick="toggleTournamentSection('league')">
+                            League
+                            <span class="expand-icon">▼</span>
+                        </h3>
+                        <div id="teamLeaderboard" class="section-content">
+                            <div class="loading">Loading league standings...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Leaderboard Section -->
+                    <div class="tournament-section collapsed" data-section="tournament">
+                        <h3 onclick="toggleTournamentSection('tournament')">
+                            Leaderboard
+                            <span class="expand-icon">▼</span>
+                        </h3>
+                        <div id="tournamentLeaderboard" class="section-content">
+                            <div class="loading">Loading tournament leaderboard...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="playerModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="modalPlayerName"></h2>
+                <div id="modalPlayerDetails"></div>
+                <div id="recentResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="sheets_api.js"></script>
+    <script src="team_leaderboard.js"></script>
+    <script src="sheets.js"></script>
+    <script async defer src="https://apis.google.com/js/api.js"></script>
+</body>
+</html>
