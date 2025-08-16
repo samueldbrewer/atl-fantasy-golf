@@ -242,18 +242,23 @@ class TeamLeaderboard {
                             // Format thru/holes played
                             let thru = comp.status?.thru || 'F';
                             
+                            // Check if player is in pre-round state (hasn't started yet)
+                            const isPreRound = comp.status?.type?.state === 'pre';
+                            const hasStarted = thru && thru > 0;
+                            
                             // Handle pre-round state (show tee time)
-                            if (thru === 0 && comp.status?.type?.state === 'pre') {
+                            if (isPreRound || (thru === 0 && comp.status?.teeTime)) {
                                 const teeTime = comp.status?.teeTime;
                                 if (teeTime) {
                                     try {
                                         const teeDate = new Date(teeTime);
-                                        const timeString = teeDate.toLocaleTimeString('en-US', { 
-                                            hour: 'numeric', 
-                                            minute: '2-digit',
-                                            timeZone: 'America/New_York'
-                                        });
-                                        thru = timeString;
+                                        // Simple time formatting without timezone
+                                        const hours = teeDate.getHours();
+                                        const minutes = teeDate.getMinutes();
+                                        const ampm = hours >= 12 ? 'PM' : 'AM';
+                                        const displayHours = hours % 12 || 12;
+                                        const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
+                                        thru = `${displayHours}:${displayMinutes} ${ampm}`;
                                     } catch (e) {
                                         console.error('Error formatting tee time:', e);
                                         thru = 'Sched';
@@ -262,8 +267,16 @@ class TeamLeaderboard {
                                     thru = 'Sched';
                                 }
                             }
-                            // Convert "18" to "F" for finished rounds
-                            else if (thru === '18' || thru === 18) {
+                            // Active player - keep the thru value
+                            else if (hasStarted && thru !== 18) {
+                                // thru stays as is (number of holes)
+                            }
+                            // Finished round
+                            else if (thru === 18 || comp.status?.type?.completed) {
+                                thru = 'F';
+                            }
+                            // Default case
+                            else {
                                 thru = 'F';
                             }
                             
@@ -465,17 +478,27 @@ class TeamLeaderboard {
             sortedActive.forEach(player => {
                 const posClass = player.numericPosition === 999 ? 'missed-cut' : '';
                 
-                // Format thru display
-                let thruDisplay = '';
-                if (player.liveThru) {
-                    thruDisplay = player.liveThru === 'F' ? 'F' : player.liveThru;
+                // Format score and thru display like main leaderboard
+                let scoreDisplay = player.liveScore || player.score || '-';
+                let thruInfo = player.liveThru;
+                
+                // If thru info looks like a time (e.g., "3:45 PM"), show it as tee time
+                if (thruInfo && typeof thruInfo === 'string' && (thruInfo.includes(':') || thruInfo.includes('AM') || thruInfo.includes('PM') || thruInfo === 'Sched')) {
+                    scoreDisplay = `${scoreDisplay} (${thruInfo})`;
+                } else if (thruInfo === 'F' || thruInfo === '18' || thruInfo === 18) {
+                    scoreDisplay = `${scoreDisplay} (F)`;
+                } else if (thruInfo && thruInfo !== '0' && thruInfo !== 0) {
+                    scoreDisplay = `${scoreDisplay} (${thruInfo})`;
+                } else {
+                    // No thru info means probably finished from previous rounds
+                    scoreDisplay = `${scoreDisplay} (F)`;
                 }
                 
                 html += `
                     <div class="player-row ${posClass}" onclick="event.stopPropagation(); showPlayerDetails('${player.name.replace(/'/g, "\\'")}')">
                         <span class="player-name">${player.name}</span>
                         <span class="player-position">${player.livePosition || player.position}</span>
-                        <span class="player-score">${player.liveScore || player.score}${thruDisplay ? ` (${thruDisplay})` : ''}</span>
+                        <span class="player-score">${scoreDisplay}</span>
                     </div>
                 `;
             });
@@ -498,17 +521,27 @@ class TeamLeaderboard {
                 });
                 
                 sortedBench.forEach(player => {
-                    // Format thru display
-                    let thruDisplay = '';
-                    if (player.liveThru) {
-                        thruDisplay = player.liveThru === 'F' ? 'F' : player.liveThru;
+                    // Format score and thru display like main leaderboard
+                    let scoreDisplay = player.liveScore || player.score || '-';
+                    let thruInfo = player.liveThru;
+                    
+                    // If thru info looks like a time (e.g., "3:45 PM"), show it as tee time
+                    if (thruInfo && typeof thruInfo === 'string' && (thruInfo.includes(':') || thruInfo.includes('AM') || thruInfo.includes('PM') || thruInfo === 'Sched')) {
+                        scoreDisplay = `${scoreDisplay} (${thruInfo})`;
+                    } else if (thruInfo === 'F' || thruInfo === '18' || thruInfo === 18) {
+                        scoreDisplay = `${scoreDisplay} (F)`;
+                    } else if (thruInfo && thruInfo !== '0' && thruInfo !== 0) {
+                        scoreDisplay = `${scoreDisplay} (${thruInfo})`;
+                    } else {
+                        // No thru info means probably finished from previous rounds
+                        scoreDisplay = `${scoreDisplay} (F)`;
                     }
                     
                     html += `
                         <div class="player-row bench" onclick="event.stopPropagation(); showPlayerDetails('${player.name.replace(/'/g, "\\'")}')">
                             <span class="player-name">${player.name}</span>
                             <span class="player-position">${player.livePosition || player.position}</span>
-                            <span class="player-score">${player.liveScore || player.score}${thruDisplay ? ` (${thruDisplay})` : ''}</span>
+                            <span class="player-score">${scoreDisplay}</span>
                         </div>
                     `;
                 });

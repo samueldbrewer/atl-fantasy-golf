@@ -214,7 +214,9 @@ async function loadLeaderboard() {
                 // Update leaderboard section title with current round
                 const leaderboardTitle = document.getElementById('leaderboardTitle');
                 if (leaderboardTitle) {
-                    leaderboardTitle.textContent = `Leaderboard - ${statusText}`;
+                    // Always show the specific round number
+                    const roundText = status?.type?.completed ? 'Final' : `Round ${round}`;
+                    leaderboardTitle.textContent = `Leaderboard - ${roundText}`;
                 }
                 
                 // Display leaderboard
@@ -346,39 +348,52 @@ function displayLeaderboard(competitors) {
             }
         }
         
-        // Format thru/holes played
-        let thru = competitor.status?.thru || competitor.status?.startHole || 'F';
+        // Format thru/holes played and score display
+        let thru = competitor.status?.thru;
+        let displayText = '';
+        
+        // Check if player is in pre-round state (hasn't started yet)
+        const isPreRound = competitor.status?.type?.state === 'pre';
+        const hasStarted = thru && thru > 0;
         
         // Handle pre-round state (show tee time before they start)
-        if (thru === 0 && competitor.status?.type?.state === 'pre') {
+        if (isPreRound || (thru === 0 && competitor.status?.teeTime)) {
             const teeTime = competitor.status?.teeTime;
             if (teeTime) {
                 try {
                     const teeDate = new Date(teeTime);
-                    const timeString = teeDate.toLocaleTimeString('en-US', { 
-                        hour: 'numeric', 
-                        minute: '2-digit',
-                        timeZone: 'America/New_York'
-                    });
-                    thru = timeString + ' ET';
+                    // Simple time formatting without timezone
+                    const hours = teeDate.getHours();
+                    const minutes = teeDate.getMinutes();
+                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                    const displayHours = hours % 12 || 12;
+                    const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
+                    displayText = `${score} (${displayHours}:${displayMinutes} ${ampm})`;
                 } catch (e) {
                     console.error('Error formatting tee time:', e);
-                    thru = 'Scheduled';
+                    displayText = `${score} (Scheduled)`;
                 }
             } else {
-                thru = 'Scheduled';
+                displayText = `${score} (Scheduled)`;
             }
         }
-        // Convert "18" to "F" for finished rounds
-        else if (thru === '18' || thru === 18) {
-            thru = 'F';
+        // Active player - show score with holes completed
+        else if (hasStarted && thru !== 18) {
+            displayText = `${score} (${thru})`;
+        }
+        // Finished round
+        else if (thru === 18 || competitor.status?.type?.completed) {
+            displayText = `${score} (F)`;
+        }
+        // Default case - probably finished from previous rounds
+        else {
+            displayText = `${score} (F)`;
         }
         
         row.innerHTML = `
             <div class="position">${position}</div>
             <div class="golfer-name">${name}</div>
-            <div class="score">${score} (${thru})</div>
-            <div class="thru">${thru}</div>
+            <div class="score">${displayText}</div>
         `;
         
         row.style.cursor = 'pointer';
@@ -432,13 +447,15 @@ async function showPlayerDetails(playerName, playerId) {
                             if (teeTime) {
                                 try {
                                     const teeDate = new Date(teeTime);
-                                    const timeString = teeDate.toLocaleTimeString('en-US', { 
-                                        hour: 'numeric', 
-                                        minute: '2-digit',
-                                        timeZone: 'America/New_York'
-                                    });
+                                    // Simple time formatting without timezone
+                                    const hours = teeDate.getHours();
+                                    const minutes = teeDate.getMinutes();
+                                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                                    const displayHours = hours % 12 || 12;
+                                    const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
+                                    const timeString = `${displayHours}:${displayMinutes} ${ampm}`;
                                     detailsHTML += `<div style="padding: 5px 0; color: #006747; font-weight: 600;">`;
-                                    detailsHTML += `Round ${roundNumber}: Scheduled - Tee time ${timeString} ET`;
+                                    detailsHTML += `Round ${roundNumber}: Scheduled - Tee time ${timeString}`;
                                     detailsHTML += `</div>`;
                                 } catch (e) {
                                     console.error('Error formatting modal tee time:', e);
@@ -460,39 +477,38 @@ async function showPlayerDetails(playerName, playerId) {
                                         competitor.status.thru !== 'F' &&
                                         competitor.status.thru !== '18' &&
                                         competitor.status.thru !== 0;
-                        
-                        if (isActiveRound) {
-                            // Active round - show current score and holes completed
-                            totalStrokes += strokes;
-                            let holesCompleted = competitor.status.thru || '-';
-                            // Convert "18" to "F"
-                            if (holesCompleted === '18' || holesCompleted === 18) {
-                                holesCompleted = 'F';
-                            }
-                            const roundToPar = round.displayValue || 'E';
-                            detailsHTML += `<div style="padding: 5px 0; color: #006747; font-weight: 600;">`;
-                            detailsHTML += `Round ${index + 1}: ${strokes} strokes (${roundToPar}) - ${holesCompleted === 'F' ? 'F' : `Thru ${holesCompleted}`}`;
-                            detailsHTML += `</div>`;
-                        } else if (strokes > 0) {
-                            // Completed round
-                            totalStrokes += strokes;
-                            completedRounds++;
-                            const roundToPar = round.displayValue || 'E';
-                            detailsHTML += `<div style="padding: 5px 0;">`;
-                            detailsHTML += `Round ${index + 1}: ${strokes} strokes (${roundToPar}) - F`;
-                            detailsHTML += `</div>`;
+                    
+                    if (isActiveRound) {
+                        // Active round - show current score and holes completed
+                        totalStrokes += strokes;
+                        let holesCompleted = competitor.status.thru || '-';
+                        // Convert "18" to "F"
+                        if (holesCompleted === '18' || holesCompleted === 18) {
+                            holesCompleted = 'F';
                         }
-                        
-                        // Calculate total to par
-                        if (round.displayValue) {
-                            const roundScore = round.displayValue;
-                            if (roundScore === 'E') {
-                                // Even par
-                            } else if (roundScore.startsWith('+')) {
-                                totalToPar += parseInt(roundScore.substring(1));
-                            } else if (roundScore.startsWith('-')) {
-                                totalToPar -= parseInt(roundScore.substring(1));
-                            }
+                        const roundToPar = round.displayValue || 'E';
+                        detailsHTML += `<div style="padding: 5px 0; color: #006747; font-weight: 600;">`;
+                        detailsHTML += `Round ${index + 1}: ${strokes} strokes (${roundToPar}) - ${holesCompleted === 'F' ? 'F' : `Thru ${holesCompleted}`}`;
+                        detailsHTML += `</div>`;
+                    } else if (strokes > 0) {
+                        // Completed round
+                        totalStrokes += strokes;
+                        completedRounds++;
+                        const roundToPar = round.displayValue || 'E';
+                        detailsHTML += `<div style="padding: 5px 0;">`;
+                        detailsHTML += `Round ${index + 1}: ${strokes} strokes (${roundToPar}) - F`;
+                        detailsHTML += `</div>`;
+                    }
+                    
+                    // Calculate total to par
+                    if (round.displayValue) {
+                        const roundScore = round.displayValue;
+                        if (roundScore === 'E') {
+                            // Even par
+                        } else if (roundScore.startsWith('+')) {
+                            totalToPar += parseInt(roundScore.substring(1));
+                        } else if (roundScore.startsWith('-')) {
+                            totalToPar -= parseInt(roundScore.substring(1));
                         }
                     }
                 });
