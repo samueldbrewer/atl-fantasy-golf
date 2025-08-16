@@ -246,13 +246,18 @@ class TeamLeaderboard {
                             if (thru === 0 && comp.status?.type?.state === 'pre') {
                                 const teeTime = comp.status?.teeTime;
                                 if (teeTime) {
-                                    const teeDate = new Date(teeTime);
-                                    const timeString = teeDate.toLocaleTimeString('en-US', { 
-                                        hour: 'numeric', 
-                                        minute: '2-digit',
-                                        timeZone: 'America/New_York'
-                                    });
-                                    thru = timeString;
+                                    try {
+                                        const teeDate = new Date(teeTime);
+                                        const timeString = teeDate.toLocaleTimeString('en-US', { 
+                                            hour: 'numeric', 
+                                            minute: '2-digit',
+                                            timeZone: 'America/New_York'
+                                        });
+                                        thru = timeString;
+                                    } catch (e) {
+                                        console.error('Error formatting tee time:', e);
+                                        thru = 'Sched';
+                                    }
                                 } else {
                                     thru = 'Sched';
                                 }

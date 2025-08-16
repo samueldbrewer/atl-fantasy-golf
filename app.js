@@ -353,13 +353,18 @@ function displayLeaderboard(competitors) {
         if (thru === 0 && competitor.status?.type?.state === 'pre') {
             const teeTime = competitor.status?.teeTime;
             if (teeTime) {
-                const teeDate = new Date(teeTime);
-                const timeString = teeDate.toLocaleTimeString('en-US', { 
-                    hour: 'numeric', 
-                    minute: '2-digit',
-                    timeZone: 'America/New_York'
-                });
-                thru = timeString + ' ET';
+                try {
+                    const teeDate = new Date(teeTime);
+                    const timeString = teeDate.toLocaleTimeString('en-US', { 
+                        hour: 'numeric', 
+                        minute: '2-digit',
+                        timeZone: 'America/New_York'
+                    });
+                    thru = timeString + ' ET';
+                } catch (e) {
+                    console.error('Error formatting tee time:', e);
+                    thru = 'Scheduled';
+                }
             } else {
                 thru = 'Scheduled';
             }
@@ -425,15 +430,22 @@ async function showPlayerDetails(playerName, playerId) {
                         if (roundNumber === currentPeriod && competitor.status?.type?.state === 'pre') {
                             const teeTime = competitor.status?.teeTime;
                             if (teeTime) {
-                                const teeDate = new Date(teeTime);
-                                const timeString = teeDate.toLocaleTimeString('en-US', { 
-                                    hour: 'numeric', 
-                                    minute: '2-digit',
-                                    timeZone: 'America/New_York'
-                                });
-                                detailsHTML += `<div style="padding: 5px 0; color: #006747; font-weight: 600;">`;
-                                detailsHTML += `Round ${roundNumber}: Scheduled - Tee time ${timeString} ET`;
-                                detailsHTML += `</div>`;
+                                try {
+                                    const teeDate = new Date(teeTime);
+                                    const timeString = teeDate.toLocaleTimeString('en-US', { 
+                                        hour: 'numeric', 
+                                        minute: '2-digit',
+                                        timeZone: 'America/New_York'
+                                    });
+                                    detailsHTML += `<div style="padding: 5px 0; color: #006747; font-weight: 600;">`;
+                                    detailsHTML += `Round ${roundNumber}: Scheduled - Tee time ${timeString} ET`;
+                                    detailsHTML += `</div>`;
+                                } catch (e) {
+                                    console.error('Error formatting modal tee time:', e);
+                                    detailsHTML += `<div style="padding: 5px 0; color: #006747; font-weight: 600;">`;
+                                    detailsHTML += `Round ${roundNumber}: Scheduled`;
+                                    detailsHTML += `</div>`;
+                                }
                             }
                         }
                         return; // Skip processing if no value
