@@ -211,14 +211,11 @@ async function loadLeaderboard() {
                 const round = status?.period || 1;
                 const statusText = status?.type?.completed ? 'Final' : `Round ${round}`;
                 
-                // Tournament details are no longer displayed in a header
-                // let location = '';
-                // if (competition.venue) {
-                //     const city = competition.venue?.address?.city || '';
-                //     const state = competition.venue?.address?.state || competition.venue?.address?.country || '';
-                //     location = city && state ? `${city}, ${state}` : city || state || '';
-                // }
-                // document.getElementById('tournamentDetails').textContent = location ? `${statusText} - ${location}` : statusText;
+                // Update leaderboard section title with current round
+                const leaderboardTitle = document.getElementById('leaderboardTitle');
+                if (leaderboardTitle) {
+                    leaderboardTitle.textContent = `Leaderboard - ${statusText}`;
+                }
                 
                 // Display leaderboard
                 const competitors = competition.competitors || [];
@@ -351,8 +348,24 @@ function displayLeaderboard(competitors) {
         
         // Format thru/holes played
         let thru = competitor.status?.thru || competitor.status?.startHole || 'F';
+        
+        // Handle pre-round state (show tee time before they start)
+        if (thru === 0 && competitor.status?.type?.state === 'pre') {
+            const teeTime = competitor.status?.teeTime;
+            if (teeTime) {
+                const teeDate = new Date(teeTime);
+                const timeString = teeDate.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit',
+                    timeZone: 'America/New_York'
+                });
+                thru = timeString + ' ET';
+            } else {
+                thru = 'Scheduled';
+            }
+        }
         // Convert "18" to "F" for finished rounds
-        if (thru === '18' || thru === 18) {
+        else if (thru === '18' || thru === 18) {
             thru = 'F';
         }
         
@@ -403,15 +416,38 @@ async function showPlayerDetails(playerName, playerId) {
                 
                 // Process each round
                 competitor.linescores.forEach((round, index) => {
-                    if (round.value && round.value !== '--') {
-                        const strokes = parseInt(round.value) || 0;
+                    // Check if this is a scheduled/pre-round (no value yet)
+                    if (!round.value || round.value === '--') {
+                        const roundNumber = index + 1;
+                        const currentPeriod = competitor.status?.period || 1;
                         
-                        // Check if this is the current/active round
-                        const isLastRoundWithData = index === competitor.linescores.filter(r => r.value && r.value !== '--').length - 1;
-                        const isActiveRound = isLastRoundWithData && 
-                                            competitor.status?.thru && 
-                                            competitor.status.thru !== 'F' &&
-                                            competitor.status.thru !== '18';
+                        // Show scheduled round if it matches current period
+                        if (roundNumber === currentPeriod && competitor.status?.type?.state === 'pre') {
+                            const teeTime = competitor.status?.teeTime;
+                            if (teeTime) {
+                                const teeDate = new Date(teeTime);
+                                const timeString = teeDate.toLocaleTimeString('en-US', { 
+                                    hour: 'numeric', 
+                                    minute: '2-digit',
+                                    timeZone: 'America/New_York'
+                                });
+                                detailsHTML += `<div style="padding: 5px 0; color: #006747; font-weight: 600;">`;
+                                detailsHTML += `Round ${roundNumber}: Scheduled - Tee time ${timeString} ET`;
+                                detailsHTML += `</div>`;
+                            }
+                        }
+                        return; // Skip processing if no value
+                    }
+                    
+                    const strokes = parseInt(round.value) || 0;
+                    
+                    // Check if this is the current/active round
+                    const isLastRoundWithData = index === competitor.linescores.filter(r => r.value && r.value !== '--').length - 1;
+                    const isActiveRound = isLastRoundWithData && 
+                                        competitor.status?.thru && 
+                                        competitor.status.thru !== 'F' &&
+                                        competitor.status.thru !== '18' &&
+                                        competitor.status.thru !== 0;
                         
                         if (isActiveRound) {
                             // Active round - show current score and holes completed

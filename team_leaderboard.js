@@ -241,7 +241,24 @@ class TeamLeaderboard {
                             
                             // Format thru/holes played
                             let thru = comp.status?.thru || 'F';
-                            if (thru === '18' || thru === 18) {
+                            
+                            // Handle pre-round state (show tee time)
+                            if (thru === 0 && comp.status?.type?.state === 'pre') {
+                                const teeTime = comp.status?.teeTime;
+                                if (teeTime) {
+                                    const teeDate = new Date(teeTime);
+                                    const timeString = teeDate.toLocaleTimeString('en-US', { 
+                                        hour: 'numeric', 
+                                        minute: '2-digit',
+                                        timeZone: 'America/New_York'
+                                    });
+                                    thru = timeString;
+                                } else {
+                                    thru = 'Sched';
+                                }
+                            }
+                            // Convert "18" to "F" for finished rounds
+                            else if (thru === '18' || thru === 18) {
                                 thru = 'F';
                             }
                             
